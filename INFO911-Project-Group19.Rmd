@@ -1,0 +1,53 @@
+---
+title: "INFO911-Project-Group19"
+author: "Tajveer Singh Dhesi"
+date: "2024-04-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+aircon = read.csv("ac_2024_04_30.csv")
+aircon = aircon[grep("Australia",aircon$Sold_in),]
+```
+
+## Pre-Processing
+```{r}
+names = colnames(aircon)
+features = NULL
+# aircon$sri2010_cool
+# aircon$sri2010_heat
+
+for (i in names) {
+  if (sum(aircon[i] == "N/A") == 0 & sum(aircon[i] == "-") == 0 & sum(aircon[i] == "") == 0){
+    features = append(features, i)
+  }
+}
+features = features[features != "sri2010_cool"]
+features = append(features, "sri2010_heat")
+aircon_subset_heating = aircon %>% select(all_of(features))
+features = sort(features)
+sapply(aircon_subset_heating, class)
+
+features = features[features != "sri2010_heat"]
+features = append(features, "sri2010_cool")
+aircon_subset_cooling = aircon %>% select(all_of(features))
+sapply(aircon_subset_heating, class)
+
+aircon_known_heating = subset(aircon_subset_heating, aircon_subset_heating["sri2010_heat"] != "NA")
+aircon_unknown_heating = subset(aircon_subset_heating, aircon_subset_heating["sri2010_heat"] == "NA")
+aircon_known_cooling = subset(aircon_subset_cooling, aircon_subset_cooling["sri2010_cool"] != "NA")
+aircon_unknown_cooling = subset(aircon_subset_cooling, aircon_subset_cooling["sri2010_cool"] == "NA")
+```
+
+## Modelling
+
+```{r}
+
+```
+
+## Results
+
+```{r}
+```
