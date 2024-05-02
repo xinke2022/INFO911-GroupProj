@@ -8,8 +8,30 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
+library(dplyr)
 aircon = read.csv("ac_2024_04_30.csv")
 aircon = aircon[grep("Australia",aircon$Sold_in),]
+aircon <- replace(aircon,aircon == "-", "N/A")
+aircon <- replace(aircon, aircon == "", "N/A")
+all_cols = colnames(aircon)
+
+
+numeric_cols <- sapply(aircon, function(x) all(grepl("^(-?\\d+\\.?\\d*|N/A|-)$", x)))
+numeric_cols["COPtestAvg"]
+
+# Convert identified columns to numeric
+for (x in all_cols){
+  if (numeric_cols[x] == TRUE){
+    aircon[[x]] = as.numeric(aircon[[x]])
+  }
+}
+aircon <- replace(aircon, aircon == "-" | aircon == "" | aircon == "N/A", NA)
+
+# aircon <- mutate_if(aircon, numeric_cols, function(x) {
+#   # Convert to numeric
+#   as.numeric(x)
+# })
+
 ```
 
 ## Pre-Processing
@@ -18,27 +40,77 @@ names = colnames(aircon)
 features = NULL
 # aircon$sri2010_cool
 # aircon$sri2010_heat
+# aircon$Rated.AEER
+# aircon$EERtestAvg cooling
+# aircon$COPtestAvg heating
+# type denotes cooling or heating or both
 
 for (i in names) {
-  if (sum(aircon[i] == "N/A") == 0 & sum(aircon[i] == "-") == 0 & sum(aircon[i] == "") == 0){
+  if (sum(is.na(aircon[i]))/nrow(aircon) < 0.3){
     features = append(features, i)
   }
 }
-features = features[features != "sri2010_cool"]
-features = append(features, "sri2010_heat")
-aircon_subset_heating = aircon %>% select(all_of(features))
-features = sort(features)
-sapply(aircon_subset_heating, class)
+toRemove = c("ApplStandard",	"MEPSComp",	"N-Standard", "Family Name", "Sold_in",	"Submit_ID",	"SubmitStatus", "Demand Response", "Capability",	"Product Class", "Demand Response 1",	"Availability Status",	"Product Website",	"Representative Brand URL",	"Registration Number")
 
+features = features[features != "sri2010_cool"]
+features = features[features != toRemove]
+features = append(features, "sri2010_heat")
+features = sort(features)
+
+
+aircon_subset_heating = aircon %>% select(all_of(features))
+aircon_subset_heating <- mutate_if(aircon_subset_heating, is.character, as.factor)
+
+replace_na_factor <- function(x) {
+  # Compute the modal value
+  mode_val <- names(sort(table(x), decreasing = TRUE))[1]
+  # Replace NA with modal value
+  x[is.na(x)] <- mode_val
+  return(x)
+}
+
+# Function to replace NA with mean for numeric columns
+replace_na_numeric <- function(x) {
+  # Compute the mean
+  mean_val <- mean(x, na.rm = TRUE)
+  # Replace NA with mean
+  x[is.na(x)] <- mean_val
+  return(x)
+}
+
+# Apply replacements based on column types
+aircon_subset_heating <- mutate_if(aircon_subset_heating, is.factor, replace_na_factor) %>%
+        mutate_if(is.numeric, replace_na_numeric)
+
+
+
+sapply(aircon_subset_heating, class)
 features = features[features != "sri2010_heat"]
 features = append(features, "sri2010_cool")
-aircon_subset_cooling = aircon %>% select(all_of(features))
-sapply(aircon_subset_heating, class)
 
+
+
+
+aircon_subset_cooling = aircon %>% select(all_of(features))
+aircon_subset_cooling <- mutate_if(aircon_subset_cooling, is.character, as.factor)
+
+aircon_subset_cooling <- mutate_if(aircon_subset_cooling, is.factor, replace_na_factor) %>%
+        mutate_if(is.numeric, replace_na_numeric)
+
+
+#Tajveer, 
 aircon_known_heating = subset(aircon_subset_heating, aircon_subset_heating["sri2010_heat"] != "NA")
 aircon_unknown_heating = subset(aircon_subset_heating, aircon_subset_heating["sri2010_heat"] == "NA")
+#Yady
 aircon_known_cooling = subset(aircon_subset_cooling, aircon_subset_cooling["sri2010_cool"] != "NA")
 aircon_unknown_cooling = subset(aircon_subset_cooling, aircon_subset_cooling["sri2010_cool"] == "NA")
+
+#Lino, Thapa
+aircon_known_heating_eff = 
+aircon_unknown_heating_eff = 
+
+aircon_known_cooling_eff = 
+aircon_unknown_cooling_eff = 
 ```
 
 ## Modelling
