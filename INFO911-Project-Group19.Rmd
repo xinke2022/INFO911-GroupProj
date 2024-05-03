@@ -50,7 +50,7 @@ for (i in names) {
     features = append(features, i)
   }
 }
-toRemove = c("ApplStandard",	"MEPSComp",	"N.Standard", "Family.Name", "Sold_in",	"Submit_ID",	"SubmitStatus", "Demand.Response.1", "Demand.Response.2","Demand.Response.3","Demand.Response.4","Demand.Response.5","Demand.Response.6","Demand.Response.7", "Demand.Response.Capability",	"Product.Class", "Demand.Response.1",	"Availability.Status",	"Product.Website",	"Representative.Brand.URL",	"Registration.Number", "Country", "Model_No", "ExpDate", "Type", "Phase")
+toRemove = c("ApplStandard",	"MEPSComp",	"N.Standard", "Family.Name", "Sold_in",	"Submit_ID",	"SubmitStatus", "Demand.Response.1", "Demand.Response.2", "Demand.Response.4","Demand.Response.5","Demand.Response.6","Demand.Response.7", "Demand.Response.Capability",	"Product.Class", "Demand.Response.1",	"Availability.Status",	"Product.Website",	"Representative.Brand.URL",	"Registration.Number", "Country", "Model_No", "ExpDate", "Type", "Phase")
 features = features[features != "sri2010_cool"]
 features = setdiff(features, toRemove)
 features = append(features, "sri2010_heat")
