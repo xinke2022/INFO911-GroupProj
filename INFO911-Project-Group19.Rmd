@@ -50,10 +50,10 @@ for (i in names) {
     features = append(features, i)
   }
 }
-toRemove = c("ApplStandard",	"MEPSComp",	"N-Standard", "Family Name", "Sold_in",	"Submit_ID",	"SubmitStatus", "Demand Response", "Capability",	"Product Class", "Demand Response 1",	"Availability Status",	"Product Website",	"Representative Brand URL",	"Registration Number")
+toRemove = c("ApplStandard",	"MEPSComp",	"N.Standard", "Family Name", "Sold_in",	"Submit_ID",	"SubmitStatus", "Demand.Response", "Capability",	"Product.Class", "Demand.Response.1",	"Availability.Status",	"Product Website",	"Representative Brand URL",	"Registration.Number", "Country", "Model_No", "ExpDate", "Type", "Phase")
 
 features = features[features != "sri2010_cool"]
-features = features[features != toRemove]
+features = setdiff(features, toRemove)
 features = append(features, "sri2010_heat")
 features = sort(features)
 
