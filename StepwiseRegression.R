@@ -1,7 +1,7 @@
 #get raw data
 library(data.table)
 library(ggplot2)
-alldata <- fread("ac.csv", na.strings = c("N/A", "-"))
+alldata <- fread("ac_2024_04_30.csv", na.strings = c("N/A", "-"))
 subdata <- alldata[grep("Australia",alldata$Sold_in),]
 # Define a function to replace "N/A" only for non-date columns
 
